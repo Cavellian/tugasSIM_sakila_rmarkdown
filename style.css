@@ -1,0 +1,21 @@
+body {
+    font-family: Times New Roman;
+    background-color: #f5f5f5;
+    line-height: 1.8;
+}
+
+h1 {
+    color: darkblue;
+}
+
+h2 {
+    color: #0066cc;
+}
+
+table {
+    background-color: white;
+}
+
+code {
+    color: darkred;
+}

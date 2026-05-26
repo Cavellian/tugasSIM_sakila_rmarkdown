@@ -1,0 +1,211 @@
+---
+title: "CM1 SIM"
+author: "Cavellian Senarendra"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+    css: style.css
+---
+
+
+# Memanggil Library
+
+Library dipanggil agar package dapat digunakan.
+
+```{r}
+library(DBI)
+library(RMySQL)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+```
+
+Jika tidak muncul error, maka package berhasil dipanggil.
+
+# Koneksi Database
+
+Tahap berikutnya adalah menghubungkan RStudio dengan database Sakila.
+
+```{r}
+con <- dbConnect(
+  RMySQL::MySQL(),
+  dbname = "sakila",
+  host = "localhost",
+  port = 3306,
+  user = "root",
+  password = "27112006"
+)
+```
+
+Jika koneksi berhasil, maka database siap digunakan untuk analisis.
+
+# Pengambilan Data
+
+Data yang diambil berupa jumlah rental berdasarkan rating film.
+
+```{r}
+query <- "
+SELECT 
+    f.rating,
+    COUNT(r.rental_id) AS total_rental
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id
+GROUP BY f.rating
+ORDER BY total_rental DESC
+"
+
+data_rental <- dbGetQuery(con, query)
+
+data_rental
+```
+
+Output di atas menunjukkan jumlah total rental pada masing-masing kategori rating film.
+
+# Visualisasi Data
+
+Visualisasi digunakan untuk melihat perbandingan jumlah rental antar rating film.
+
+```{r}
+ggplot(data_rental,
+       aes(x = rating,
+           y = total_rental,
+           fill = rating)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Jumlah Rental Berdasarkan Rating Film",
+    x = "Rating Film",
+    y = "Total Rental"
+  ) +
+  theme_minimal()
+```
+
+Berdasarkan grafik di atas, terlihat bahwa terdapat perbedaan jumlah rental pada setiap kategori rating film.
+
+# Statistik Deskriptif
+
+Analisis statistik deskriptif digunakan untuk mengetahui gambaran umum data rental.
+
+```{r}
+summary(data_rental$total_rental)
+```
+
+Hasil summary menunjukkan nilai minimum, maksimum, median, mean, dan kuartil data rental.
+
+# Persamaan Mean Menggunakan LaTeX
+
+Rata-rata data dihitung menggunakan persamaan berikut:
+
+$$
+\\bar{x} = \\frac{\\sum x}{n}
+$$
+
+Keterangan:
+- $\\bar{x}$ = rata-rata data
+- $\\sum x$ = jumlah seluruh data
+- $n$ = banyak data
+
+# Menghitung Mean
+
+```{r}
+mean(data_rental$total_rental)
+```
+
+Mean digunakan untuk mengetahui rata-rata jumlah rental.
+
+# Persamaan Standar Deviasi Menggunakan LaTeX
+
+Standar deviasi dihitung menggunakan persamaan:
+
+$$
+s = \\sqrt{\\frac{\\sum (x_i - \\bar{x})^2}{n-1}}
+$$
+
+Keterangan:
+- $s$ = standar deviasi
+- $x_i$ = data ke-i
+- $\\bar{x}$ = rata-rata
+- $n$ = jumlah data
+
+# Menghitung Standar Deviasi
+
+```{r}
+sd(data_rental$total_rental)
+```
+
+Standar deviasi digunakan untuk melihat variasi data rental antar kategori rating film.
+
+# Kesimpulan
+
+Berdasarkan hasil analisis, dapat disimpulkan bahwa jumlah rental berbeda pada setiap kategori rating film. Visualisasi dan statistik deskriptif membantu memahami pola penyewaan film pada database Sakila.
+
+Berdasarkan grafik batang di atas, terlihat bahwa terdapat perbedaan jumlah rental pada masing-masing kategori rating film.
+
+# Statistik Deskriptif
+
+Analisis statistik deskriptif digunakan untuk mengetahui gambaran umum data rental.
+
+```{r}
+summary(data_rental$total_rental)
+```
+
+Hasil summary menunjukkan nilai minimum, maksimum, median, mean, dan kuartil data rental.
+
+# Menghitung Mean
+
+```{r}
+mean(data_rental$total_rental)
+```
+
+Mean digunakan untuk mengetahui rata-rata jumlah rental pada seluruh kategori rating.
+
+# Menghitung Standar Deviasi
+
+```{r}
+sd(data_rental$total_rental)
+```
+
+Standar deviasi digunakan untuk melihat seberapa besar variasi jumlah rental antar kategori rating film.
+
+# Kesimpulan
+
+Berdasarkan hasil analisis, dapat disimpulkan bahwa setiap kategori rating film memiliki jumlah rental yang berbeda-beda. Visualisasi dan statistik deskriptif membantu memahami pola penyewaan film pada database Sakila.
+
+```{r}
+summary(data_rental$total_rental)
+```
+
+```{r}
+mean(data_rental$total_rental)
+
+sd(data_rental$total_rental)
+```
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
